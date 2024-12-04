@@ -138,4 +138,4 @@ SubDroid 的设计理念是通过联动多种开源工具,为用户提供全面�
 
 ## License
 
-SubDroid 遵循 MIT License。
+SubDroid 遵循 MIT License.
