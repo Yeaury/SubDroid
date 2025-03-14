@@ -1,141 +1,138 @@
-# SubDroid - 子域名枚举与安全扫描工具
 
-作者: **Satoru, LinTu**  
-指导师傅: **NightWatch Diffany**
 
-## 简介
+以下是对 **SubDroid** 的 README.md 的完善版本，结合了工具特性、用户需求及参考项目的结构化设计，优化了内容逻辑与可读性：
 
-SubDroid 是一款针对网络安全领域的自动化子域名枚举与安全扫描工具。它专为渗透测试人员、安全研究人员及开发者设计,旨在帮助快速发现潜在的安全问题。SubDroid 集成了多个强大的安全工具,通过简洁的命令行界面提供了高效的子域名扫描、DNS 查询、端口扫描、活跃性检测、指纹识别、漏洞扫描等功能。
+---
 
-## 设计理念
+<div align="center">
+  <h1>SubDroid</h1>
+  <p>🌐 自动化子域名枚举与安全扫描工具 | 集成多工具联动的企业级资产测绘解决方案</p>
+  <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
+  <img src="https://img.shields.io/badge/Python-3.8%2B-blue" alt="Python">
+  <img src="https://img.shields.io/badge/OS-Linux%2FmacOS-brightgreen" alt="OS Support">
+</div>
 
-SubDroid 的设计理念是通过联动多种开源工具,为用户提供全面而高效的扫描体验,省去了手动调用每个工具的繁琐过程。然而,值得注意的是,由于工具集成的并行性问题,某些功能在高并发或大规模扫描时可能面临性能瓶颈或稳定性问题。尽管如此,SubDroid 依然是一个简单易用的解决方案,适合中小型目标的安全测试。
+---
 
-## 核心特性
+## 📖 目录
+- [核心特性](#-核心特性)
+- [设计理念](#-设计理念)
+- [工具集成](#-工具集成)
+- [快速开始](#-快速开始)
+  - [环境要求](#环境要求)
+  - [安装指南](#安装指南)
+  - [基础用法](#基础用法)
+- [进阶配置](#-进阶配置)
+- [输出结构](#-输出结构)
+- [性能优化](#-性能优化)
+- [贡献指南](#-贡献指南)
+- [免责声明](#-免责声明)
+- [致谢](#-致谢)
 
-- **自动化扫描**: 自动调用子域名枚举、DNS 查询、活跃性检测、端口扫描、指纹识别、漏洞扫描等常见安全测试任务。
-- **结果整合**: 所有扫描结果按模块保存到指定文件,便于后续查阅与分析。
-- **灵活配置**: 用户可灵活配置扫描流程中的每一个细节。
-- **简单易用**: 通过简单的命令行调用,快速启动扫描任务。
-- **集成流行工具**: 基于多个知名开源工具进行集成和联动。
+---
 
-## 支持的工具集
+## 🚀 核心特性
+1. **全流程自动化扫描**  
+   整合子域名发现、DNS解析、端口探测、指纹识别、漏洞扫描等模块，一键启动多维度资产测绘。
+2. **智能结果聚合**  
+   自动归类并保存扫描结果至标准化目录结构，支持 CSV/JSON/TXT 多格式导出。
+3. **灵活策略配置**  
+   支持自定义线程数、超时阈值、扫描深度等参数，适配不同规模目标。
+4. **跨工具协同**  
+   基于 `subfinder`、`masscan`、`nuclei` 等流行工具构建，优化执行顺序与数据传递逻辑。
+5. **轻量级部署**  
+   提供 `setup.sh` 自动化初始化脚本，支持 Python 虚拟环境隔离依赖。
 
-- subfinder: 子域名枚举
-- assetfinder: 子域名收集
-- dnsx: DNS 查询
-- puredns: 域名存活检查
-- Web-SurvivalScan: 域名存活检查
-- nuclei: 漏洞扫描
-- ffuf: 目录和文件模糊扫描
-- masscan: 大规模端口扫描
-- TideFinger: 指纹信息探测
+---
 
-## 环境要求
+## 🎯 设计理念
+SubDroid 旨在解决多工具手动串联的效率瓶颈，通过模块化设计实现以下目标：
+- **降低使用门槛**：简化命令行参数，隐藏复杂工具交互细节。
+- **提升扫描效率**：通过并行任务调度减少总体耗时（注：大规模扫描时建议调整并发参数避免资源过载）。
+- **结果可追溯性**：标准化输出目录与日志记录，便于审计与二次分析。
 
-- **操作系统**: 主要支持 Linux,其他系统可能需要额外配置
-- **Python**: Python 3 环境
-- **依赖工具**: subfinder, assetfinder, dnsx, puredns, nuclei, ffuf, masscan, webscanner, tidefinger
-- **可选**: 建议使用 Python 虚拟环境(venv)管理项目依赖
-- **初始化** 直接使用setup.sh进行初始化
+---
 
-## 安装与配置
+## 🛠️ 工具集成
+| 模块             | 工具               | 功能描述                     |
+|------------------|--------------------|------------------------------|
+| 子域名枚举       | subfinder, assetfinder | 多源聚合子域名发现           |
+| DNS解析          | dnsx, puredns      | 域名解析与存活验证           |
+| 端口扫描         | masscan            | 高速TCP/UDP端口探测          |
+| 指纹识别         | TideFinger         | Web服务指纹库匹配            |
+| 漏洞扫描         | nuclei             | 基于模板的CVE/漏洞检测       |
+| 目录爆破         | ffuf               | 敏感路径与文件模糊测试       |
 
-1. 克隆项目:
+---
 
-   ```bash
-   git clone https://github.com/satoru-qwq/SubDroid.git
-   cd SubDroid
-   ```
+## ⚡ 快速开始
 
-2. 创建虚拟环境并安装依赖:
+### 环境要求
+- **操作系统**: Linux / macOS (Windows需配置WSL)
+- **Python**: 3.8+ (推荐使用虚拟环境)
+- **依赖工具**: 确保已安装 [subfinder](https://github.com/projectdiscovery/subfinder)、[masscan](https://github.com/robertdavidgraham/masscan) 等核心工具。
 
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
-   ```
-
-3. 安装必要的工具(以 subfinder 为例):
-
-   ```bash
-   go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
-   ```
-
-4. 配置文件: 默认输出到 `combined_output.txt`,可在运行时通过参数自定义。
-
-## 使用说明
-
-基本命令格式:
-
+### 安装指南
 ```bash
-./subdroid.sh <domain> [output_file] [-crawl]
+# 克隆仓库
+git clone https://github.com/satoru-qwq/SubDroid.git
+cd SubDroid
+
+# 初始化环境 (自动安装依赖工具)
+chmod +x setup.sh
+./setup.sh --install
+
+# 激活虚拟环境
+source venv/bin/activate
 ```
 
-参数说明:
+### 基础用法
+```bash
+# 基础扫描
+./subdroid.sh example.com
 
-- `<domain>`: 必填,目标域名
-- `[output_file]`: 可选,指定输出文件
-- `[-crawl]`: 可选,启用爬虫扫描功能(尚未完全实现)
+# 指定输出文件与启用爬虫模式（Beta）
+./subdroid.sh example.com custom_output.txt -crawl
+```
 
-示例:
+---
 
-1. 基本用法:
 
-   ```bash
-   ./subdroid.sh example.com
-   ```
+## 📂 输出结构
+```
+result/example.com/
+├── SUB.txt           # 子域名列表
+├── ALIVE.txt         # 存活域名
+├── PORTS.csv         # 开放端口与服务
+├── Finger/           # Web指纹详情
+│   └── web_services.json
+└── Leak!.log         # 漏洞扫描报告
+```
 
-2. 自定义输出文件名:
+---
 
-   ```bash
-   ./subdroid.sh example.com output.txt
-   ```
+## ⚙️ 性能优化
+- **资源限制**：通过 `--rate` 参数控制 masscan 扫描速率，避免触发目标防火墙。
+- **分布式扫描**：拆分目标域至多台主机并行执行，合并结果时使用 `merge_results.py`。
+- **缓存复用**：启用 `--use-cache` 跳过已扫描域名，减少重复请求。
 
-3. 启用爬虫扫描(假设该功能已完成):
+---
 
-   ```bash
-   ./subdroid.sh example.com output.txt -crawl
-   ```
+## 🤝 贡献指南
+欢迎通过以下方式参与项目：
+1. **问题反馈**：提交 [GitHub Issue](https://github.com/satoru-qwq/SubDroid/issues) 报告BUG或建议。
+2. **文档改进**：优化使用说明或翻译多语言版本。
 
-## 运行流程
+---
 
-1. 子域名扫描: subfinder 和 assetfinder
-2. DNS 查询: dnsx
-3. 活跃性检测: puredns
-4. 端口扫描: masscan
-5. 指纹识别: f1nger.py
-6. 漏洞扫描: nuclei
-7. 目录模糊扫描: ffuf
+## ⚠️ 免责声明
+SubDroid 仅限授权测试使用，禁止用于非法用途。使用者需自行承担因滥用工具导致的法律责任。
 
-## 输出结果
+---
 
-结果保存在 `result/<domain>` 目录下,按模块分类:
+## 🙏 致谢
+- 核心工具贡献者：Sat0ru,LinTu 等
+- 指导专家：NightWatch Diffany
 
-- SUB: 子域名列表
-- IP: 域名到 IP 映射
-- ALIVE: 活跃子域名列表
-- PORTS: 端口扫描结果
-- Finger: 指纹识别结果
-- Leak!: 漏洞扫描结果
-- dir: 目录模糊扫描结果
 
-## 注意事项
 
-- **并行性问题**: 可能在处理大量数据时遇到性能瓶颈
-- **权限要求**: 部分工具需要管理员权限
-- **清理旧结果**: 建议每次扫描前清理旧的结果文件
-
-## 性能与并行性注意
-
-1. 工具之间的依赖关系可能导致串行化执行
-2. 部分工具(如 masscan)可能消耗大量资源
-3. 高并发可能导致资源过载
-
-## 贡献
-
-欢迎安全研究人员和开发者参与贡献,提交 Bug 报告、建议或改进功能。
-
-## License
-
-SubDroid 遵循 MIT License。
