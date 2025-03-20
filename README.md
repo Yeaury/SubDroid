@@ -77,7 +77,7 @@ chmod +x setup.sh
 ./setup.sh --install
 
 # 激活虚拟环境
-source venv/bin/activate
+source ./survive/venv/bin/activate
 ```
 
 ### 基础用法
