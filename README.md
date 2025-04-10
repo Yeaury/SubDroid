@@ -27,42 +27,44 @@
 
 ## 🚀 核心特性
 1. **全流程自动化扫描**  
-   整合子域名发现、DNS解析、端口探测、指纹识别、漏洞扫描等模块，一键启动多维度资产测绘。
+   整合子域名发现、DNS解析、端口探测、指纹识别、Poc验证等模块，一键启动多维度资产测绘。
 2. **智能结果聚合**  
-   自动归类并保存扫描结果至标准化目录结构，支持 CSV/JSON/TXT 多格式导出。
+   自动归类并保存扫描结果至标准化目录结构，报告内置AI api分析（可选）。
 3. **灵活策略配置**  
    支持自定义线程数、超时阈值、扫描深度等参数，适配不同规模目标。
-4. **跨工具协同**  
-   基于 `subfinder`、`masscan`、`nuclei` 等流行工具构建，优化执行顺序与数据传递逻辑。
-5. **轻量级部署**  
-   提供 `setup.sh` 自动化初始化脚本，支持 Python 虚拟环境隔离依赖。
+4. **跨工具协同**
+   自研证书透明度，域传送漏洞检测  
+   基于 `subfinder`、`masscan`、`Tidefinger` 等流行工具构建，优化执行顺序与数据传递逻辑。
+6. **轻量级部署**  
+   提供 `install.sh` 自动化初始化脚本，支持 Python 虚拟环境隔离依赖。
 
 ---
 
 ## 🎯 设计理念
-SubDroid 旨在解决多工具手动串联的效率瓶颈，通过模块化设计实现以下目标：
+SubDroid 旨在解决多工具手动串联以及信息收集中信息分拣的效率瓶颈，通过模块化设计实现以下目标：
 - **降低使用门槛**：简化命令行参数，隐藏复杂工具交互细节。
 - **提升扫描效率**：通过并行任务调度减少总体耗时（注：大规模扫描时建议调整并发参数避免资源过载）。
 - **结果可追溯性**：标准化输出目录与日志记录，便于审计与二次分析。
-
+- **理论支持强大**：拥有全套信息收集矩阵，提供强大理论支持
+- **供应链信息收集**： （研发中，将作为新的工具独立开发并联动其中）
 ---
 
 ## 🛠️ 工具集成
-| 模块             | 工具               | 功能描述                     |
-|------------------|--------------------|------------------------------|
-| 子域名枚举       | subfinder, assetfinder | 多源聚合子域名发现           |
-| DNS解析          | dnsx, puredns      | 域名解析与存活验证           |
-| 端口扫描         | masscan            | 高速TCP/UDP端口探测          |
-| 指纹识别         | TideFinger         | Web服务指纹库匹配            |
-| 漏洞扫描         | nuclei             | 基于模板的CVE/漏洞检测       |
-| 目录爆破         | ffuf               | 敏感路径与文件模糊测试       |
+| 模块             | 工具                           | 功能描述                    |
+|------------------|--------------------------------|-----------------------------|
+| 子域名枚举       | subfinder, shuffledns，subtake | 多源聚合子域名发现           |
+| DNS解析          | dnsx,subtake(自研）            | 域名解析与存活验证           |
+| 端口扫描         | masscan                        | 高速TCP/UDP端口探测          |
+| 指纹识别         | TideFinger                     | Web服务指纹库匹配            |
+| 漏洞扫描         | nuclei（集成中）               | 基于模板的CVE/漏洞检测       |
+| 目录爆破         | ffuf（集成中）                 | 敏感路径与文件模糊测试       |
 
 ---
 
 ## ⚡ 快速开始
 
 ### 环境要求
-- **操作系统**: Linux / macOS (Windows需配置WSL)
+- **操作系统**: Linux (Windows需配置WSL)
 - **Python**: 3.8+ (推荐使用虚拟环境)
 - **依赖工具**: 确保已安装 [subfinder](https://github.com/projectdiscovery/subfinder)、[masscan](https://github.com/robertdavidgraham/masscan) 等核心工具。
 - **网络环境**： 需要设置桥接或者frp穿透以及端口转发（虚拟环境下）
@@ -73,20 +75,20 @@ git clone https://github.com/satoru-qwq/SubDroid.git
 cd SubDroid
 
 # 初始化环境 (自动安装依赖工具)
-chmod +x setup.sh
-./setup.sh --install
+chmod +x install.sh
+./install.sh
 
-# 激活虚拟环境
-source ./survive/venv/bin/activate
+# 配置api
+其中result.py报告生成需要ai的api Key
+自研subtake需要配置zoomeye以及virustotal的api
+subfinder shuffledns 需要配置各大平台的apikey
 ```
 
 ### 基础用法
 ```bash
 # 基础扫描
-./subdroid.sh example.com
-
-# 指定输出文件与启用爬虫模式（Beta）
-./subdroid.sh example.com custom_output.txt -crawl
+./subdroid.sh example.com -silent
+./subdroid.sh example.com 
 ```
 
 ---
@@ -94,13 +96,22 @@ source ./survive/venv/bin/activate
 
 ## 📂 输出结构
 ```
-result/example.com/
-├── SUB.txt           # 子域名列表
-├── ALIVE.txt         # 存活域名
-├── PORTS.csv         # 开放端口与服务
-├── Finger/           # Web指纹详情
-│   └── web_services.json
-└── Leak!.log         # 漏洞扫描报告
+F:\tmp\example\
+|—— example_report.txt
+├── ALIVE\
+│   ├── alive.txt
+│   └── wayback\
+├── Finger\
+├── IP\
+│   ├── domain\
+│   │   └── hackpax.top.txt
+│   └── ip\
+│       └── hackpax.top.txt
+├── PORTS\
+│   ├── masscan_results.txt
+│   └── open_ports.txt
+└── SUB\
+    └── hackpax.top.txt
 ```
 
 ---
