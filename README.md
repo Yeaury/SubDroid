@@ -125,7 +125,7 @@ F:\tmp\example\
 
 ## 🤝 贡献指南
 欢迎通过以下方式参与项目：
-1. **问题反馈**：提交 [GitHub Issue](https://github.com/satoru-qwq/SubDroid/issues) 报告BUG或建议。
+1. **问题反馈**：提交 [GitHub Issue](https://github.com/Sat0ru-qwq/SubDroid/issues) 报告BUG或建议。
 2. **文档改进**：优化使用说明或翻译多语言版本。
 
 ---
